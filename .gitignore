@@ -1,0 +1,10 @@
+# Biber tool output
+*_bibertool.bib
+biber.log
+
+# Scratch / editor backup files
+*.bib~
+*.bib.bak
+
+# macOS
+.DS_Store

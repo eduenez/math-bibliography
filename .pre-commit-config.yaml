@@ -1,0 +1,22 @@
+repos:
+  - repo: local
+    hooks:
+      - id: bibtex-tidy-format
+        name: bibtex-tidy (format)
+        language: script
+        entry: hooks/format-bib.sh
+        files: \.bib$
+        description: >
+          Formats BibTeX files with canonical options (sorted, lowercase fields,
+          curly braces, no coden/mrreviewer/bdsk fields). If a file is reformatted,
+          the commit is rejected — stage the changes and recommit.
+
+      - id: biber-validate
+        name: biber --validate-datamodel
+        language: script
+        entry: hooks/validate-bib.sh
+        files: \.bib$
+        description: >
+          Validates BibTeX syntax using biber --tool --validate-datamodel.
+          Fails if biber reports ERROR-level messages (e.g. missing required fields,
+          malformed entries).
