@@ -1,7 +1,6 @@
 --curly
 --numeric
 --no-escape
---sort
 --duplicates=key
 --merge=combine
 --omit=coden,mrreviewer,bdsk-url-1,bdsk-url-2,bdsk-url-3,keywords

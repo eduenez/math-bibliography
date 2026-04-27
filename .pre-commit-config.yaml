@@ -3,13 +3,28 @@ repos:
     hooks:
       - id: bibtex-tidy-format
         name: bibtex-tidy (format)
-        language: script
-        entry: hooks/format-bib.sh
+        language: system
+        entry: bibtex-tidy
+        args:
+          - --curly
+          - --numeric
+          - --no-escape
+          - --duplicates=key
+          - --merge=combine
+          - --omit=coden,mrreviewer,bdsk-url-1,bdsk-url-2,bdsk-url-3,keywords
+          - --remove-empty-fields
+          - --trailing-commas
+          - --blank-lines
+          - --space=2
+          - --strip-comments
         files: \.bib$
         description: >
-          Formats BibTeX files with canonical options (sorted, lowercase fields,
-          curly braces, no coden/mrreviewer/bdsk fields). If a file is reformatted,
-          the commit is rejected — stage the changes and recommit.
+          Formats BibTeX entries in place with canonical options (lowercase
+          fields, curly braces, numeric year/volume, removes obsolete fields).
+          --sort is intentionally omitted: entries are pre-sorted; re-sort
+          manually with hooks/sort-bib.sh when needed.
+          If a file is reformatted, the commit is rejected — stage the
+          changes and recommit.
 
       - id: biber-validate
         name: biber --validate-datamodel
@@ -18,5 +33,5 @@ repos:
         files: \.bib$
         description: >
           Validates BibTeX syntax using biber --tool --validate-datamodel.
-          Fails if biber reports ERROR-level messages (e.g. missing required fields,
-          malformed entries).
+          Fails if biber reports ERROR-level messages (e.g. missing required
+          fields, malformed entries).
