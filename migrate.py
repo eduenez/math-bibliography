@@ -63,6 +63,7 @@ import difflib
 import json
 import os
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -79,19 +80,21 @@ REKEY_JSON = SCRIPT_DIR / "rekey.json"
 # Each pattern is a regex that matches the *argument* of \bibliography{...}.
 # Order matters: more-specific patterns first.
 _OLD_BIB_ARG_PATTERNS = [
-    # Two-file combos (either order)
-    r"\.\.\/DImanuscripts\/iovino\s*,\s*\.\.\/DImanuscripts\/biblioteca",
-    r"\.\.\/DImanuscripts\/biblioteca\s*,\s*\.\.\/DImanuscripts\/iovino",
-    r"\.\.\/iovino\s*,\s*\.\.\/biblioteca",
-    r"\.\.\/biblioteca\s*,\s*\.\.\/iovino",
-    # Single-file references
-    r"\.\.\/DImanuscripts\/iovino",
-    r"\.\.\/DImanuscripts\/biblioteca",
-    r"\.\.\/iovino",
-    r"\.\.\/biblioteca",
+    # Two-file combos (either order) — with or without .bib extension
+    r"\.\.\/DImanuscripts\/iovino(?:\.bib)?"
+    r"\s*,\s*\.\.\/DImanuscripts\/biblioteca(?:\.bib)?",
+    r"\.\.\/DImanuscripts\/biblioteca(?:\.bib)?"
+    r"\s*,\s*\.\.\/DImanuscripts\/iovino(?:\.bib)?",
+    r"\.\.\/iovino(?:\.bib)?\s*,\s*\.\.\/biblioteca(?:\.bib)?",
+    r"\.\.\/biblioteca(?:\.bib)?\s*,\s*\.\.\/iovino(?:\.bib)?",
+    # Single-file references — with or without .bib extension
+    r"\.\.\/DImanuscripts\/iovino(?:\.bib)?",
+    r"\.\.\/DImanuscripts\/biblioteca(?:\.bib)?",
+    r"\.\.\/iovino(?:\.bib)?",
+    r"\.\.\/biblioteca(?:\.bib)?",
     # Ergodic sub-project variants (local bibdatabase paired with iovino)
-    r"bibdatabase\s*,\s*\.\.\/iovino",
-    r"bibdatabase\s*,\s*iovino",
+    r"bibdatabase\s*,\s*\.\.\/iovino(?:\.bib)?",
+    r"bibdatabase\s*,\s*iovino(?:\.bib)?",
 ]
 
 # Build one combined regex that matches \bibliography{<old-arg>} (active or
@@ -122,11 +125,37 @@ _CITE_RE = re.compile(
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
 
+def _git_root(path: Path) -> Path | None:
+    """Return the git repository root containing *path*, or None."""
+    try:
+        out = subprocess.run(
+            ["git", "rev-parse", "--show-toplevel"],
+            cwd=path if path.is_dir() else path.parent,
+            capture_output=True, text=True, check=True,
+        )
+        return Path(out.stdout.strip())
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return None
+
+
 def relative_bib_path(tex_file: Path) -> str:
-    """Return the path string to use in \bibliography{} for a given TeX file."""
+    """Return the \\bibliography{} argument for the given TeX file.
+
+    Prefers ``bib/references`` (the submodule location) when a
+    ``bib/references.bib`` file exists inside the enclosing git repo.
+    Falls back to a path relative to this script's own ``references.bib``
+    when no submodule is found.
+    """
+    root = _git_root(tex_file)
+    if root is not None:
+        submodule_bib = root / "bib" / "references.bib"
+        if submodule_bib.exists():
+            target = submodule_bib.with_suffix("")
+            tex_dir = tex_file.resolve().parent
+            rel = os.path.relpath(target, tex_dir)
+            return rel.replace(os.sep, "/")
     tex_dir = tex_file.resolve().parent
     rel = os.path.relpath(REFERENCES_BIB.with_suffix(""), tex_dir)
-    # BibTeX uses forward slashes even on Windows
     return rel.replace(os.sep, "/")
 
 
