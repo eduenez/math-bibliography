@@ -5,6 +5,13 @@ biber.log
 # Scratch / editor backup files
 *.bib~
 *.bib.bak
+*.original
+
+# Python
+__pycache__/
+
+# AUCTeX auto-generated
+auto/
 
 # macOS
 .DS_Store
