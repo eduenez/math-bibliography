@@ -2,6 +2,11 @@
 *_bibertool.bib
 biber.log
 
+# Legacy source bibliographies — merged into references.bib, never commit again.
+# references.bib is the one authoritative file in this repo.
+iovino.bib
+biblioteca.bib
+
 # Scratch / editor backup files
 *.bib~
 *.bib.bak
