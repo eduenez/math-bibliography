@@ -1,0 +1,33 @@
+# Consumers of math-bibliography
+
+*Generated from `LaTeX-shared-files/vendor-registry.json` by `python3 _scripts/consumers.py --write` (run in LaTeX-shared-files). Edit the registry, not this file.*
+
+Every repository that carries, links or cites the master `references.bib`. When keys are renamed or entries change here, **these** are the
+repositories to update. Key renames are recorded in the `rekey-*.json` files (`rekey-2026-10.json` composes the October 2026 renames);
+apply them to a consumer's TeX sources with `texfix.py cites --map rekey-2026-10.json …` (see `CONVERTING.md` in the template).
+
+| Repository | Model | Pinned | Notes |
+|---|---|---|---|
+| [`eduenez/no-free-lunch`](https://github.com/eduenez/no-free-lunch) | vendored-json | `3bc10d5` | project .sty NFL.sty snapshot in children/; branch revendor-2026-10 pending merge |
+| [`eduenez/topos-logic`](https://github.com/eduenez/topos-logic) | vendored-json | `3bc10d5` | has references-local.bib for entries not in the master; PR workflow (collaborators); branch revendor-2026-10 pending merge |
+| [`eduenez/LaTeX-codespace-template`](https://github.com/eduenez/LaTeX-codespace-template) | vendored-simple | `3bc10d5` | template for new multi-paper repositories; ships the full set of di-* packages |
+| [`eduenez/QuantumDI`](https://github.com/eduenez/QuantumDI) | vendored-simple | `3bc10d5` | multi-paper repository (Dueñez-Iovino); private |
+| [`eduenez/QuantumTeam`](https://github.com/eduenez/QuantumTeam) | vendored-simple | `3bc10d5` | multi-paper repository (team papers and books); private |
+| [`eduenez/ProbabilityModels`](https://github.com/eduenez/ProbabilityModels) | submodule | `8f8a419` | old model: git submodules sty/ and bib/ pinned to old commits; bumping requires key/preamble retrofit; candidate for conversion to vendoring |
+| [`eduenez/RealRandom`](https://github.com/eduenez/RealRandom) | submodule | `e9f0ef4` | old model (submodules); see ProbabilityModels |
+| [`eduenez/RealStructures`](https://github.com/eduenez/RealStructures) | submodule | `e9f0ef4` | old model (submodules); see ProbabilityModels |
+| [`eduenez/DImanuscripts`](https://github.com/eduenez/DImanuscripts) | submodule | `ff5f219` | bibliography submodule only |
+| [`eduenez/eduenez.github.io`](https://github.com/eduenez/eduenez.github.io) | submodule | `064cc5d` | bibliography submodule only (path math-bibliography/) |
+| [`eduenez/talks`](https://github.com/eduenez/talks) | submodule | `8f8a419` | bibliography submodule only (path math-bibliography/) |
+| [`eduenez/grants`](https://github.com/eduenez/grants) | legacy-bib | `-` | NOT on the master: uses legacy biblioteca.bib / iovino.bib (and ../../DImanuscripts/iovino); candidate for migration to the master bibliography with math-bibliography/migrate.py --map rekey.json |
+
+**Models.** *vendored-json*: copies in `_packages/` with `vendor.lock.json` and a frozen bibliography baseline; maintained with
+`vendor.py` and `vendor_sty.py` run from LaTeX-shared-files. *vendored-simple*: copies in `_packages/` with `vendor.lock` (SHA-256 per file);
+the repository updates itself with `make update-shared`. *submodule*: git submodules pinned to old commits (the old model; bumping a
+pointer needs retrofitting of citation keys and preambles). *legacy-bib*: still uses the old biblioteca.bib / iovino.bib files (not the master).
+
+## Retired (consolidated; do not update)
+
+- QuantumStructures / Soler_axioms → QuantumTeam/quantum_structures_Soler (same GitHub repository (renamed); obsolete notice pushed)
+- Quantum_stability, Quantum_NIP, Quantum_simple_unstable, Bipartite_observables_survey → QuantumDI/Qbipartite_* (obsolete notices pushed)
+- Quantum_logic, Stability, Games, LogicTextbookUTSA, DiscreteMathTextbookUTSA → QuantumTeam/* (obsolete notices pushed)

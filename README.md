@@ -185,3 +185,7 @@ both active and commented out:
 
 The `bibdatabase,` prefix (used in the `ergodic` sub-project) is
 preserved alongside the new path.
+
+## Consumers
+
+Repositories that carry, link or cite this bibliography are listed in [`CONSUMERS.md`](CONSUMERS.md) (generated from `LaTeX-shared-files/vendor-registry.json`). Before renaming keys, check who is affected; after renaming, record the renames in a dated `rekey-*.json` file and propagate (`rekey-2026-10.json` composes the October 2026 renames).
