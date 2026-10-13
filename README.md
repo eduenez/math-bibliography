@@ -45,7 +45,12 @@ Keys from each file are preserved as-is:
 - `iovino.bib` style: `Author-Author:YYYY` — e.g. `Aerts-Pulmannova:2006`, `Argyros-Haydon:2011`
 
 **New entries** should follow the `Author-Author:YYYY` convention
-(full last names, hyphen-separated, colon before year).
+(full last names, hyphen-separated, colon before year). Hyphens *separate authors
+only*: a surname that is hyphenated or has particles is written without hyphens or
+spaces (`BenYaacov`, `NashWilliams`, `TomczakJaegermann`, `vonNeumann`, `vanMoerbeke`).
+Same-year collisions get a lowercase suffix (`Gowers:1996a`); undated works use `:0000`.
+`rekey-hyphen-2026-10.json` maps the keys renamed when this rule was adopted
+(apply with `migrate.py --map`).
 
 To list all current keys:
 

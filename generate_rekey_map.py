@@ -9,7 +9,8 @@ Usage:
 
 Key convention:
     LastName1-LastName2:YYYY
-    - Hyphenated surnames preserved (Tomczak-Jaegermann → Tomczak-Jaegermann)
+    - Hyphens inside a surname are DROPPED (Tomczak-Jaegermann → TomczakJaegermann);
+      the only hyphens in a key separate authors
     - Space-joined compounds CamelCased, particles lowercase
       (Ben Yaacov → BenYaacov, von Neumann → vonNeumann, van den Dries → vandenDries)
     - TeX accents and Unicode diacritics stripped to ASCII base letter
@@ -97,7 +98,7 @@ def normalize_surname(raw: str) -> str:
         von Neumann   → vonNeumann
         van den Dries → vandenDries
         Ben Yaacov    → BenYaacov
-        Tomczak-Jaegermann → Tomczak-Jaegermann   (hyphen preserved)
+        Tomczak-Jaegermann → TomczakJaegermann   (hyphen dropped)
         Pulmannov\'a  → Pulmannova
         Tsirel'son    → Tsirelson
     """
@@ -122,7 +123,9 @@ def normalize_surname(raw: str) -> str:
                 # Capitalize first letter, preserve rest
                 normalized_words.append(w_clean[0].upper() + w_clean[1:])
         result_chunks.append("".join(normalized_words))
-    return "-".join(r for r in result_chunks if r)
+    # House style: a hyphen inside a surname is dropped, so that "-" in a key
+    # always separates authors.
+    return "".join(r for r in result_chunks if r)
 
 
 def extract_last_name(single_name: str) -> str:
