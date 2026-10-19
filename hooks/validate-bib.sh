@@ -4,6 +4,19 @@
 set -euo pipefail
 
 for bib in "$@"; do
+    # A field value ending in an unescaped backslash ({Phys. Rev. Lett.\}) is a control space
+    # damaged by whitespace stripping; BibTeX passes the stray backslash on to the document.
+    if ! python3 - "$bib" <<'EOF'
+import re, sys
+bad = [f'{sys.argv[1]}:{n}: {line.strip()}' for n, line in enumerate(open(sys.argv[1], encoding='utf-8'), 1)
+       if re.search(r'(?<!\\)(?:\\\\)*\\\},?\s*$', line)]
+print('\n'.join(['field value ends in a stray backslash (write the value without it):'] + bad) if bad else '', end='')
+sys.exit(1 if bad else 0)
+EOF
+    then
+        exit 1
+    fi
+
     tmpdir=$(mktemp -d)
     cp "$bib" "$tmpdir/"
     basename="$(basename "$bib")"

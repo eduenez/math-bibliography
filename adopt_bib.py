@@ -19,6 +19,15 @@ spec.loader.exec_module(g)
 OMIT = {'coden', 'mrreviewer', 'bdsk-url-1', 'bdsk-url-2', 'bdsk-url-3', 'keywords', 'date-added', 'date-modified', 'owner', 'timestamp', 'abstract', 'file'}
 
 
+def clean_value(v):
+    """Collapse whitespace and strip; drop a control space left dangling at the end ('Lett.\\ ' -> 'Lett.'),
+    which stripping would otherwise turn into a stray backslash before the closing brace ('{Lett.\\}')."""
+    v = re.sub(r'\s+', ' ', v).strip()
+    while re.search(r'(?<!\\)(?:\\\\)*\\$', v):
+        v = v[:-1].rstrip()
+    return v
+
+
 def read_braced(s, i):
     depth = 0
     for j in range(i, len(s)):
@@ -54,7 +63,7 @@ def parse(text):
             else:
                 mm = re.match(r'[^,\s}]+', body[i:])
                 v = mm.group(0) if mm else ''
-            fields.setdefault(k, re.sub(r'\s+', ' ', v).strip())
+            fields.setdefault(k, clean_value(v))
         ents[key] = dict(type=typ, fields=fields, raw=text[m.start():end])
         order.append(key)
     return ents, order
@@ -103,7 +112,7 @@ def fmt(key, typ, f):
     names = [k for k in order if k in f] + sorted(k for k in f if k not in order)
     lines = [f'@{typ}{{{key},']
     for k in names:
-        v = str(f[k]).strip()
+        v = clean_value(str(f[k]))
         if not v or k in OMIT:
             continue
         if k in ('author', 'editor'):
