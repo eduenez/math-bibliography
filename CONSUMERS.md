@@ -8,8 +8,8 @@ apply them to a consumer's TeX sources with `texfix.py cites --map rekey-2026-10
 
 | Repository | Model | Pinned | Notes |
 |---|---|---|---|
-| [`eduenez/no-free-lunch`](https://github.com/eduenez/no-free-lunch) | vendored-json | `29cf9b3` | project .sty NFL.sty snapshot in children/; branch revendor-2026-10 pending merge |
-| [`eduenez/topos-logic`](https://github.com/eduenez/topos-logic) | vendored-json | `c713aee` | has references-local.bib for entries not in the master; PR workflow (collaborators); branch revendor-2026-10 pending merge |
+| [`eduenez/no-free-lunch`](https://github.com/eduenez/no-free-lunch) | vendored-json | `29cf9b3` | project .sty NFL.sty snapshot in children/ |
+| [`eduenez/topos-logic`](https://github.com/eduenez/topos-logic) | vendored-json | `c713aee` | uses the shared references.bib only (references-local.bib adopted into the master); PR workflow (collaborators) |
 | [`eduenez/LaTeX-codespace-template`](https://github.com/eduenez/LaTeX-codespace-template) | vendored-simple | `c713aee` | template for new multi-paper repositories; ships the full set of di-* packages Toolkit (scripts, templates, shared root files) vendored from toolkit/, pinned in _scripts/vendor.lock. |
 | [`eduenez/QuantumDI`](https://github.com/eduenez/QuantumDI) | vendored-simple | `c713aee` | multi-paper repository (Dueñez-Iovino); private Toolkit (scripts, templates, shared root files) vendored from toolkit/, pinned in _scripts/vendor.lock. |
 | [`eduenez/QuantumTeam`](https://github.com/eduenez/QuantumTeam) | vendored-simple | `c713aee` | multi-paper repository (team papers and books); private Toolkit (scripts, templates, shared root files) vendored from toolkit/, pinned in _scripts/vendor.lock. |
