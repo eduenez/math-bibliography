@@ -6,11 +6,12 @@ Adopt the entries of a consumer's local bibliography file into the master refere
     master key;
   * a new entry gets a house-style key (Author-Author:YYYY from the author field; hyphen only between authors; suffix a/b/... on a clash — an
     existing unsuffixed key with the same author+year is renamed to ...a, recorded in the map), is formatted with bibtex-tidy using
-    .bibtex-tidy-args (needs `bibtex-tidy` on PATH), and is inserted in key order.
+    .bibtex-tidy-args (needs `bibtex-tidy` on PATH), and is added in key order (the whole file is kept sorted case-insensitively by
+    key, the order of hooks/sort-bib.sh; existing entries found out of order are moved into place and counted).
 Writes (with --apply) references.bib and a JSON map {old key -> new key} (default rekey-adopted-<name>.json) that the consumer applies to its TeX
 sources (`texfix.py cites --map ...`). Dry run by default: prints what would be matched / added / renamed.
 """
-import sys, os, re, json, subprocess, importlib.util, unicodedata, tempfile
+import sys, os, re, json, subprocess, importlib.util, unicodedata, tempfile, bisect
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 spec = importlib.util.spec_from_file_location('g', os.path.join(HERE, 'generate_rekey_map.py'))
@@ -130,6 +131,40 @@ def tidy(text):
     return r.stdout.decode()
 
 
+ENTRY_START = re.compile(r'^@\w+\s*\{', re.M)
+SPECIAL = re.compile(r'@(preamble|string|comment)\b', re.I)
+
+
+def entry_key(b):
+    return re.match(r'@\w+\s*\{\s*([^,\s]+)', b).group(1)
+
+
+def sort_entries(text, new_blocks):
+    """Add new_blocks to the bibliography text and return (text, number of existing entries that had to move).
+
+    The result is the master's canonical layout: @preamble/@string/@comment blocks first (in their order), then every entry sorted
+    case-insensitively by key (the order of `bibtex-tidy --sort`, ties kept in file order), one blank line between blocks.
+    Sorting the whole list instead of inserting next to a neighbour keeps the order right even when the file was not fully sorted
+    and when several new entries fall between the same two existing ones."""
+    starts = [m.start() for m in ENTRY_START.finditer(text)]
+    head = text[:starts[0]] if starts else text
+    blocks = [text[a:b].strip('\n') for a, b in zip(starts, starts[1:] + [len(text)])]
+    special = [b for b in blocks if SPECIAL.match(b)]
+    entries = [b for b in blocks if not SPECIAL.match(b)]
+    old_order = [entry_key(b) for b in entries]
+    entries += [b.strip('\n') for b in new_blocks]
+    entries.sort(key=lambda b: entry_key(b).lower())
+    # existing entries that moved = those outside a longest subsequence already in the final order
+    rank = {}
+    for i, b in enumerate(entries):
+        rank.setdefault(entry_key(b), i)
+    tails = []
+    for r in (rank[k] for k in old_order):
+        j = bisect.bisect_left(tails, r)
+        tails[j:j + 1] = [r]
+    return head + '\n\n'.join(special + entries) + '\n', len(old_order) - len(tails)
+
+
 def main():
     if len(sys.argv) < 2:
         sys.exit(__doc__)
@@ -197,14 +232,9 @@ def main():
         text = re.sub(r'(^@\w+\s*\{\s*)' + re.escape(o) + r'(\s*,)', lambda m: m.group(1) + n + m.group(2), text, count=1, flags=re.M)
     tidy_in = '\n\n'.join(fmt(newkeys[k], loc[k]['type'], loc[k]['fields']) for k in new)
     blocks = tidy(tidy_in).strip('\n').split('\n\n') if new else []
-    mats = list(re.finditer(r'^@\w+\s*\{\s*([^,\s]+)\s*,', text, re.M))
-    inserts = []
-    for b in blocks:
-        key = re.match(r'@\w+\s*\{\s*([^,\s]+)', b).group(1)
-        pos = next((m.start() for m in mats if m.group(1).lower() > key.lower()), len(text))
-        inserts.append((pos, b))
-    for pos, b in sorted(inserts, key=lambda x: -x[0]):
-        text = text[:pos] + b.strip('\n') + '\n\n' + text[pos:]
+    text, moved = sort_entries(text, blocks)
+    if moved:
+        print(f'note: {moved} existing entr{"y was" if moved == 1 else "ies were"} out of key order and moved into place')
     open(os.path.join(HERE, 'references.bib'), 'w').write(text)
     full = {k: v for k, v in keymap.items() if k != v}
     full.update(renames)
