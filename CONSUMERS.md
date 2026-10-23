@@ -20,7 +20,7 @@ apply them to a consumer's TeX sources with `texfix.py cites --map rekey-2026-10
 | [`eduenez/eduenez.github.io`](https://github.com/eduenez/eduenez.github.io) | submodule | `fa84843` | bibliography submodule only (path math-bibliography/); private/solo or legacy: submodule kept deliberately |
 | [`eduenez/talks`](https://github.com/eduenez/talks) | submodule | `fa84843` | bibliography submodule only (path math-bibliography/); private/solo or legacy: submodule kept deliberately |
 | [`eduenez/grants`](https://github.com/eduenez/grants) | legacy-bib | `-` | NOT on the master: uses legacy biblioteca.bib / iovino.bib (and ../../DImanuscripts/iovino); candidate for migration to the master bibliography with math-bibliography/migrate.py --map rekey.json; PLANNED (deferred): convert each of the 6 subdirectories to a grants_* paper directory in QuantumDI (see QuantumDI/docs/plans/grants-conversion.md) |
-| [`eduenez/research`](https://github.com/eduenez/research) | submodule | `fa84843` | solo repository; both masters as submodules (_packages = LaTeX-shared-files, toolkit used in place from _packages/toolkit/; Makefile and latexmkrc are stubs). |
+| [`eduenez/research`](https://github.com/eduenez/research) | submodule | `09e4de9` | solo repository; both masters as submodules (_packages = LaTeX-shared-files, toolkit used in place from _packages/toolkit/; Makefile and latexmkrc are stubs). |
 
 **Models.** *vendored-json*: copies in `_packages/` with `vendor.lock.json` and a frozen bibliography baseline; maintained with
 `vendor.py` and `vendor_sty.py` run from LaTeX-shared-files. *vendored-simple*: copies in `_packages/` with `vendor.lock` (SHA-256 per file);
