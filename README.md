@@ -8,6 +8,7 @@ Shared BibTeX bibliography database for research papers by Dueñez and Iovino.
 |---|---|
 | `references.bib` | Unified database — 808 entries, UTF-8, normalized |
 | `.bibtex-tidy-args` | Canonical bibtex-tidy flags (used by hooks and sort script) |
+| `.bibtex-tidy-version` | The bibtex-tidy version the file is formatted with (`npm install -g bibtex-tidy@$(cat .bibtex-tidy-version)`); another version may reformat entries. `vendor.py` refuses to run with a different one |
 | `.pre-commit-config.yaml` | Pre-commit hook configuration |
 | `hooks/validate-bib.sh` | Validation hook (biber) |
 | `hooks/sort-bib.sh` | Manual re-sort script (run after bulk additions) |
